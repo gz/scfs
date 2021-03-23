@@ -1,0 +1,36 @@
+/* A State-Centric File System */
+
+// The relations allowed are <<, <=, =, >= and >> for strictly earlier, earlier or equal,
+// exactly equal, later or equal and strictly later, respectively.
+// The exception is the Provides field, for which only = is allowed.
+typedef Comparator = StrictlyEarlier | EarlierOrEqual | ExactlyEqual | LaterOrEqual | StrictlyLater
+
+typedef Dependency = Dependency {
+    // A dependency can be one of n packages
+    package: Vec<string>,
+    // A version constraint for the corresponding package
+    version: Vec<Option<(Comparator, string)>>,
+}
+
+typedef Package = Package {
+    package: string, 
+    version: string, 
+    source: Option<string>, 
+    architecture: Option<string>, 
+    maintainer: Option<string>, 
+    original_maintainer: Option<string>, 
+    depends: Vec<Dependency>, 
+    replaces: Option<string>, 
+    section: Option<string>, 
+    multi_arch: Option<string>, 
+    homepage: Option<string>, 
+    description: Option<string>,
+    short_description: Option<string>,
+    files: Vec<string>,
+}
+
+input relation Package[Ref<Package>]
+primary key (x) (x.package, x.version)
+
+output relation InstalledPackage[Ref<Package>]
+InstalledPackage[p] :- Package[p].
